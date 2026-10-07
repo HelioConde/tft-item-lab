@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0a0d14">
+  <meta name="description" content="TFT Item Lab organiza os itens do seu histórico recente por frequência, colocação média, Top 4 e unidades em que aparecem.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="TFT Item Lab — sua itemização no histórico">
+  <meta property="og:description" content="Veja quais itens aparecem mais nas suas partidas, em quais unidades e com quais resultados pessoais.">
+  <meta property="og:url" content="https://helioconde.github.io/tft-item-lab/">
+  <link rel="canonical" href="https://helioconde.github.io/tft-item-lab/">
+  <title>TFT Item Lab — sua itemização no histórico</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-mark">IL</span><span>Item <b>Lab</b></span></a>
+    <div class="top-actions">
+      <span class="source-pill" id="source-pill">DADOS RIOT</span>
+      <button class="ghost small" id="language-toggle" type="button" aria-label="Mudar idioma">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero shell">
+      <div class="hero-copy">
+        <p class="eyebrow" data-i18n="eyebrow">TFT · ITEMIZAÇÃO PESSOAL</p>
+        <h1 data-i18n="heroTitle">Não é “qual item é melhor?”. <span>É “como eu realmente itemizo?”.</span></h1>
+        <p data-i18n="heroText">Use seu histórico recente para ver quais itens aparecem mais, em quais unidades você os colocou e como essas partidas terminaram.</p>
+
+        <form class="lookup" id="lookup-form">
+          <label><span data-i18n="riotId">Riot ID</span><input id="riot-id" placeholder="Nome#TAG" autocomplete="off" required></label>
+          <label><span data-i18n="server">Servidor</span><select id="server"><option value="br1">BR</option><option value="na1">NA</option><option value="euw1">EUW</option><option value="eun1">EUNE</option><option value="kr">KR</option><option value="jp1">JP</option><option value="la1">LAN</option><option value="la2">LAS</option><option value="oc1">OCE</option></select></label>
+          <button class="primary" type="submit" data-i18n="analyze">Abrir meu Item Lab</button>
+        </form>
+
+        <div class="lookup-meta"><span data-i18n="privacy">Consulta pública via backend gamer. Nenhuma chave Riot fica no navegador.</span><button class="text-button" id="recent-toggle" type="button" data-i18n="recent">Buscas recentes</button></div>
+        <div id="recent-searches" class="recent-searches" hidden></div>
+        <div id="status" class="status" role="status" aria-live="polite"></div>
+      </div>
+
+      <aside class="hero-card">
+        <p class="eyebrow" data-i18n="labLogic">O QUE O LAB ORGANIZA</p>
+        <div class="logic-preview">
+          <article><span>01</span><div><strong data-i18n="logic1">Itens recorrentes</strong><small data-i18n="logic1Text">O que aparece repetidamente na sua amostra.</small></div></article>
+          <article><span>02</span><div><strong data-i18n="logic2">Unidades</strong><small data-i18n="logic2Text">Em quais campeões cada item foi usado.</small></div></article>
+          <article><span>03</span><div><strong data-i18n="logic3">Resultado</strong><small data-i18n="logic3Text">Colocação média e Top 4 das partidas em que apareceu.</small></div></article>
+        </div>
+      </aside>
+    </section>
+
+    <section id="loading" class="loading shell" hidden><div class="spinner"></div><div><strong data-i18n="loadingTitle">Consultando seu histórico TFT…</strong><span data-i18n="loadingText">O backend pode completar a amostra em etapas.</span></div></section>
+
+    <section id="result" class="result shell" hidden>
+      <div class="result-head">
+        <div><p class="eyebrow" data-i18n="analysis">SEU LAB RECENTE</p><h2 id="player-name">—</h2><p id="sample-note" class="muted"></p></div>
+        <div class="period-tabs"><button class="period" data-period="week" type="button">7D</button><button class="period active" data-period="month" type="button">30D</button><button class="period" data-period="set" type="button" data-i18n="currentSet">Set atual</button></div>
+      </div>
+
+      <section class="metrics">
+        <article><span data-i18n="games">Partidas</span><strong id="metric-games">—</strong><small data-i18n="gamesHelp">no recorte</small></article>
+        <article><span data-i18n="items">Itens únicos</span><strong id="metric-items">—</strong><small data-i18n="itemsHelp">itens observados</small></article>
+        <article><span data-i18n="mostUsed">Mais usado</span><strong id="metric-most">—</strong><small id="metric-most-note">—</small></article>
+        <article><span data-i18n="bestAvg">Melhor média</span><strong id="metric-best">—</strong><small data-i18n="bestAvgHelp">mín. 2 aparições</small></article>
+      </section>
+
+      <section class="content-grid">
+        <section class="panel items-panel">
+          <div class="panel-head"><div><p class="eyebrow" data-i18n="library">BIBLIOTECA</p><h3 data-i18n="libraryTitle">Itens do período</h3></div>
+            <div class="sort-group"><button class="sort active" type="button" data-sort="count" data-i18n="sortFreq">Frequência</button><button class="sort" type="button" data-sort="avg" data-i18n="sortAvg">Média</button><button class="sort" type="button" data-sort="top4">Top 4</button></div>
+          </div>
+          <div id="item-grid" class="item-grid"></div>
+        </section>
+
+        <aside class="panel detail-panel">
+          <div class="panel-head"><div><p class="eyebrow" data-i18n="detailEyebrow">DETALHE</p><h3 id="detail-title" data-i18n="selectItem">Escolha um item</h3></div></div>
+          <div id="detail-content" class="detail-content empty"></div>
+          <div class="ad-slot"><span data-i18n="ad">PUBLICIDADE</span><small data-i18n="adNote">espaço reservado · fora da análise principal</small></div>
+        </aside>
+      </section>
+
+      <section class="panel unit-panel">
+        <div class="panel-head"><div><p class="eyebrow" data-i18n="unitsEyebrow">POR UNIDADE</p><h3 data-i18n="unitsTitle">Onde seus itens aparecem</h3></div><span id="unit-count" class="muted"></span></div>
+        <div id="unit-grid" class="unit-grid"></div>
+      </section>
+
+      <section class="method">
+        <div><p class="eyebrow" data-i18n="methodEyebrow">COMO LER</p><h3 data-i18n="methodTitle">Histórico pessoal não é recomendação universal.</h3></div>
+        <p data-i18n="methodText">Um item pode aparecer em partidas boas porque combinou com aquela unidade, lobby, comp ou estágio. A média descreve a sua amostra e não prova causalidade.</p>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer shell">
+    <div><strong>TFT Item Lab</strong><span data-i18n="riotDisclaimer">Produto independente. Teamfight Tactics e Riot Games são marcas da Riot Games, Inc.</span></div>
+    <nav><a href="sobre.html" data-i18n="about">Sobre</a><a href="privacidade.html" data-i18n="privacyLink">Privacidade</a><a href="termos.html" data-i18n="terms">Termos</a></nav>
+  </footer>
+
+  <script src="backend-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
