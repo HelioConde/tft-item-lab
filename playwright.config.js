@@ -1,4 +1,4 @@
-const { defineConfig } = require("@playwright/test");
+const { defineConfig, devices } = require("@playwright/test");
 
 module.exports = defineConfig({
   testDir: "./tests",
@@ -6,8 +6,11 @@ module.exports = defineConfig({
   expect: { timeout: 20000 },
   use: {
     baseURL: process.env.PLAYWRIGHT_BASE_URL || "http://127.0.0.1:4173",
-    browserName: "chromium",
     screenshot: "only-on-failure",
     trace: "retain-on-failure"
-  }
+  },
+  projects: [
+    { name: "desktop-chromium", use: { ...devices["Desktop Chrome"] } },
+    { name: "mobile-chromium", use: { ...devices["Pixel 7"], browserName: "chromium" } }
+  ]
 });
