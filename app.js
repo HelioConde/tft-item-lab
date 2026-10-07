@@ -321,7 +321,14 @@ function updateUrl(name,tag,platform){
   url.searchParams.set("riot",name+"#"+tag);
   url.searchParams.set("server",platform);
   url.searchParams.set("period",period);
+  url.searchParams.set("lang",lang==="en"?"en":"pt");
   history.replaceState(null,"",url.pathname+"?"+url.searchParams.toString());
+}
+
+function updateLanguageUrl(){
+  const url=new URL(location.href);
+  url.searchParams.set("lang",lang==="en"?"en":"pt");
+  history.replaceState(null,"",url.pathname+(url.searchParams.toString()?"?"+url.searchParams.toString():""));
 }
 async function lookup(name,tag,platform){
   const endpoint=window.TFT_ITEM_LAB_BACKEND?.tftProfile;
@@ -364,7 +371,7 @@ $("#lookup-form").addEventListener("submit",event=>{
   if(!id){setStatus("error",t("invalid"));$("#riot-id").focus();return;}
   lookup(id.gameName,id.tagLine,$("#server").value);
 });
-$("#language-toggle").addEventListener("click",()=>{lang=lang==="pt"?"en":"pt";applyLanguage();});
+$("#language-toggle").addEventListener("click",()=>{lang=lang==="pt"?"en":"pt";applyLanguage();updateLanguageUrl();});
 $("#recent-toggle").addEventListener("click",()=>{$("#recent-searches").hidden=!$("#recent-searches").hidden;});
 document.addEventListener("click",event=>{
   const previous=event.target.closest("[data-recent]");
@@ -399,8 +406,11 @@ document.addEventListener("click",event=>{
   }
 });
 (function boot(){
-  applyLanguage();
   const query=new URLSearchParams(location.search);
+  const requestedLang=String(query.get("lang")||"").toLowerCase();
+  if(requestedLang==="en")lang="en";
+  if(requestedLang==="pt"||requestedLang==="pt-br")lang="pt";
+  applyLanguage();
   const rawPeriod=query.get("period");
   if(VALID_PERIODS.has(rawPeriod))period=rawPeriod;
   const id=parseRiotId(query.get("riot"));
