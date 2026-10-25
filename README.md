@@ -1,75 +1,39 @@
-# TFT Item Lab — Laboratório pessoal de itemização
+<div align="center">
+  <h1>🧪 TFT Item Lab</h1>
+  <p><strong>Descubra como os itens foram distribuídos entre as unidades nas suas partidas recentes de Teamfight Tactics.</strong></p>
+  <p><img alt="Status" src="https://img.shields.io/badge/status-MVP%20em%20valida%C3%A7%C3%A3o-64748b"></p>
+</div>
 
-**Descubra como você distribui itens nas suas partidas recentes de Teamfight Tactics.**
+## O que analisar
 
-**O que analisar:** itens frequentes, unidades que os utilizam, colocação média da amostra, Top 4 e períodos de consulta.
+O **TFT Item Lab** é um laboratório de **histórico pessoal de itemização**. Ao informar um Riot ID e a região, você visualiza quais itens apareceram com mais frequência, em quais unidades foram equipados e que resultados tiveram as partidas consultadas.
 
-**Método:** dados do perfil via backend gamer, sem expor a chave Riot no navegador.
+| Visão | O que representa |
+| --- | --- |
+| **Itens** | Frequência e número de partidas com cada item |
+| **Unidades** | Campeões que receberam os itens |
+| **Resultados** | Colocação média e taxa de Top 4 da amostra |
+| **Detalhes** | Última aparição e histórico de uso |
+| **Períodos** | 7 dias, 30 dias ou Set conforme disponibilidade |
+| **Idiomas** | PT-BR e inglês |
 
-> Este laboratório mostra o seu histórico, não um ranking global de melhores itens. Conclusões dependem da amostra e do contexto da partida.
+O backend gamer oferece dados por uma função como `riot-legacy-tft-profile`. Alguns payloads podem fornecer **nomes de itens**, enquanto outros permitem apenas IDs numéricos. O frontend deve indicar esse limite em vez de inventar nomes.
 
----
+## Como interpretar corretamente
 
-Análise pessoal de itemização em Teamfight Tactics baseada no histórico recente do próprio jogador.
+**O produto não é um ranking global de itens.** Um item associado a bons resultados em determinada amostra pode refletir a unidade, a composição, o patch, o lobby e decisões da partida. Correlação não prova causalidade.
 
-## Estado atual
+Filtros por período aplicam-se **às partidas recuperadas**, não a um histórico ilimitado da conta.
 
-> **MVP funcional implementado em 07/10/2026.** O próximo passo é validação publicada/real, não expansão de escopo.
+## Executar localmente
 
-## O que o produto responde
+```bash
+git clone https://github.com/HelioConde/tft-item-lab.git
+cd tft-item-lab
+python -m http.server 8000
+```
 
-- quais itens aparecem mais no seu histórico recente;
-- em quantas partidas cada item apareceu;
-- em quais unidades ele foi usado;
-- colocação média da amostra;
-- taxa de Top 4;
-- última aparição;
-- quais unidades concentram mais itens;
-- recortes de 7 dias, 30 dias e Set atual.
-
-O produto **não é uma tier list global** e não afirma causalidade. Resultado observado depende de unidade, comp, lobby, patch, estágio e decisões da partida.
-
-## Backend
-
-Fonte pública server-side:
-
-`https://bieihhaobdztjyoweewa.supabase.co/functions/v1/riot-legacy-tft-profile`
-
-A chave Riot permanece no backend gamer. Nenhuma chave Riot fica no navegador.
-
-O frontend aceita itens por nome quando o backend fornece `itemNames`/`item_names` e mantém fallback explícito para IDs numéricos quando o nome não estiver presente.
-
-## UX
-
-- PT-BR padrão + EN;
-- busca Riot ID + servidor;
-- buscas recentes locais;
-- deep link com Riot ID, servidor, período e idioma;
-- loading, erro, 404/rate limit;
-- biblioteca ordenável por frequência, média e Top 4;
-- detalhe por item;
-- visão por unidade;
-- mobile;
-- slot de publicidade reservado sem bloquear a análise;
-- Sobre, Privacidade e Termos;
-- SEO básico, robots e sitemap;
-- atualização automática após novo deploy.
-
-## QA
-
-Automação criada:
-
-- Static QA;
-- Browser E2E em desktop Chromium;
-- Browser E2E em viewport mobile;
-- payload TFT controlado com itens/unidades;
-- Riot ID inválido;
-- rate limit;
-- PT-BR/EN;
-- troca de período e ordenação;
-- `Live Riot Smoke` separado para a versão publicada com `AlchemyFlames#BR1`.
-
-Execute localmente:
+Abra `http://localhost:8000`. Para QA:
 
 ```bash
 npm install
@@ -77,37 +41,15 @@ npm run check
 npm run test:e2e
 ```
 
-## Gate antes de V2
+O frontend depende do backend Riot e deve manter **todas as chaves privadas exclusivamente no servidor**.
 
-- [x] fluxo principal implementado;
-- [x] backend gamer configurado;
-- [x] agregação de itens/unidades;
-- [x] 7D / 30D / Set;
-- [x] PT-BR/EN;
-- [x] mobile;
-- [x] páginas institucionais;
-- [x] Browser E2E;
-- [x] GitHub Pages preparado;
-- [x] live-update;
-- [ ] confirmar Actions/Pages verdes;
-- [ ] confirmar que o payload real expõe nomes/IDs de itens como esperado;
-- [ ] validar com 3+ Riot IDs/regiões;
-- [ ] testar conta com pouco histórico e histórico sem detalhes de item;
-- [ ] revisar desktop/mobile publicado;
-- [ ] corrigir apenas P0/P1 encontrados.
+## Antes de expandir
 
-## V2 — somente depois da validação
+- Verificar o payload real de itens e unidades com contas diferentes.
+- Validar resultados com histórico curto, itens ausentes e rate limit.
+- Conferir layouts desktop/mobile, leitura dos indicadores e atualizações de versão.
+- Manter demonstrações e dados reais claramente diferenciados.
 
-- evolução por patch;
-- comparação entre dois itens no histórico pessoal;
-- filtros por unidade/trait/comp;
-- correlação por estágio;
-- favoritos/notas pessoais;
-- card compartilhável;
-- catálogo visual enriquecido de itens.
+**Estado:** MVP em validação; a documentação histórica de QA permanece em [README_HISTORY](docs/README_HISTORY_2026-10-25.md).
 
-Não abrir essas features antes do gate do MVP.
-
-## Compliance
-
-Produto independente e não endossado pela Riot Games. Teamfight Tactics e Riot Games são marcas de seus respectivos titulares.
+Projeto independente de Riot Games, desenvolvido por [Hélio Conde](https://github.com/HelioConde).
