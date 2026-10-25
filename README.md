@@ -1,4 +1,14 @@
-# TFT Item Lab
+# TFT Item Lab — Laboratório pessoal de itemização
+
+**Descubra como você distribui itens nas suas partidas recentes de Teamfight Tactics.**
+
+**O que analisar:** itens frequentes, unidades que os utilizam, colocação média da amostra, Top 4 e períodos de consulta.
+
+**Método:** dados do perfil via backend gamer, sem expor a chave Riot no navegador.
+
+> Este laboratório mostra o seu histórico, não um ranking global de melhores itens. Conclusões dependem da amostra e do contexto da partida.
+
+---
 
 Análise pessoal de itemização em Teamfight Tactics baseada no histórico recente do próprio jogador.
 
