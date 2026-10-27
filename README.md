@@ -53,3 +53,12 @@ O frontend depende do backend Riot e deve manter **todas as chaves privadas excl
 **Estado:** MVP em validação; a documentação histórica de QA permanece em [README_HISTORY](docs/README_HISTORY_2026-10-25.md).
 
 Projeto independente de Riot Games, desenvolvido por [Hélio Conde](https://github.com/HelioConde).
+
+
+## Publicação e teste Riot — diagnóstico de outubro de 2026
+
+A interface é um **site estático**, e a hospedagem no GitHub Pages não precisa de PHP nem banco de dados. O catálogo de resultados reais, porém, depende de uma API externa da Riot hospedada separadamente; sem ela, dados de partidas não podem ser sincronizados entre pessoas ou obtidos diretamente com chaves privadas no navegador.
+
+**Estado verificável:** o QA local do frontend e os testes de API de produção são etapas distintas. Se o GitHub Pages ainda não estiver habilitado, o novo workflow valida o código, informa que a publicação foi pulada e não tenta criar o site sem permissão. Para ativar, vá a **Settings → Pages → Build and deployment → Source: GitHub Actions**. A publicação copia apenas HTML, JavaScript, CSS e arquivos públicos de SEO, sem incluir arquivos de teste ou código interno.
+
+O teste `Live Riot Smoke` agora verifica primeiro se a URL devolve HTTP 200 e contém o formulário real do projeto. Assim, uma página 404 não se confunde com indisponibilidade da API Riot. Mesmo com a página online, sucesso nos dados reais exige que a API responda corretamente; o teste não considera erros da Riot aprovados.
