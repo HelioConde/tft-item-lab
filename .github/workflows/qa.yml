@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: tft-item-lab-qa-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   qa:
     runs-on: ubuntu-latest
@@ -20,7 +24,7 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npm run check
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps --only-shell chromium
       - name: Start static server
         run: python3 -m http.server 4173 >/tmp/tft-item-lab.log 2>&1 &
       - name: Browser E2E
